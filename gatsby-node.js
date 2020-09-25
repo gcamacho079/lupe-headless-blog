@@ -48,7 +48,18 @@ exports.createPages = async ({ graphql, actions }) => {
   postsList.forEach((edge) => {
     if (edge.node.data.categories[0].category) {
       edge.node.data.categories.forEach((cat) => {
-        categorySet.add(cat.category.document[0].data.name)
+        const categoryName = cat.category.document[0].data.name
+        const categorySlug = `${_.kebabCase(categoryName)}`
+        categorySet.add(categoryName)
+
+        createPage({
+          path: `/categories/${categorySlug}/${edge.node.uid}`,
+          component: postTemplate,
+          context: {
+            // Pass the unique ID (uid) through context so the template can filter by it
+            uid: edge.node.uid,
+          },
+        })
       })
     }
 
